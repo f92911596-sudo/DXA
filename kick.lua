@@ -1,4 +1,4 @@
--- سكربت Delta لاستقبال إشارة الطرد عبر ديسكورد
+-- سكربت Delta المحدث للتحقق من آخر رسالة
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -6,27 +6,29 @@ local LocalPlayer = Players.LocalPlayer
 -- رابط الـ Webhook الخاص بك
 local DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1510920930040348714/kKy6esJPnBdIdS_JRl3h6kFBSJzOwOJUCyBRvZzVLQ3X9rqaPyU-hHYBVINxhj_8mSh9"
 
--- تحويل الرابط للعمل عبر Proxy لتجاوز الحجب
-local ProxyURL = DISCORD_WEBHOOK_URL:gsub("discord.com", "webhook.lewisakura.moe") 
+-- استخدام Proxy بديل ومجرب
+local ProxyURL = DISCORD_WEBHOOK_URL:gsub("discord.com", "hooks.hyra.io") 
 
-print("📡 Delta Discord Listener Active... Waiting for signal")
+print("📡 النظام جاهز، جاري الاتصال...")
 
 task.spawn(function()
-    -- فحص كل ثانيتين
-    while task.wait(2) do 
+    while task.wait(3) do 
         local success, response = pcall(function()
-            return game:HttpGet(ProxyURL)
+            -- نضيف /messages لجلب آخر الرسائل من الـ Webhook
+            return game:HttpGet(ProxyURL .. "/messages")
         end)
         
-        -- التحقق من الاستجابة
-        if success and response and response ~= "" then
+        if success and response then
+            -- هنا نقوم بفك تشفير الـ JSON للبحث عن الرسالة
             if string.find(response, "KICK_NOW") then
-                print("🚨 تم استقبال إشارة الطرد! جاري الخروج...")
-                LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الخروج فوراً بناءً على إشارة ديسكورد!")
+                print("🚨 إشارة الطرد تم رصدها!")
+                LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الطرد بنجاح!")
                 break
             else
-                print("📡 في انتظار الإشارة... (الوضع الحالي: سليم)")
+                print("📡 في انتظار الإشارة...")
             end
+        else
+            warn("❌ فشل الاتصال بالـ Proxy")
         end
     end
 end)
