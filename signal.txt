@@ -1,28 +1,26 @@
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- هذا هو رابط GitHub الخاص بك
 local SIGNAL_URL = "https://raw.githubusercontent.com/f92911596-sudo/DXA/refs/heads/main/signal.txt"
 
-print("📡 [DSC SYSTEM] نظام الاستقبال من GitHub جاهز ويعمل...")
+print("📡 [DSC SYSTEM] نظام الاستقبال جاهز...")
 
 task.spawn(function()
     while task.wait(2) do 
         local success, response = pcall(function()
-            -- جلب محتوى الملف من GitHub
-            return game:HttpGet(SIGNAL_URL .. "?nc=" .. tick()) -- الـ tick هنا يضمن جلب التحديث فوراً
+            -- نضيف خيار تجنب الـ Cache بشكل أقوى
+            return game:HttpGet(SIGNAL_URL .. "?nocache=" .. os.time())
         end)
         
-        -- إذا نجح الاتصال ووجد كلمة KICK_NOW في الملف
-        if success and string.find(response, "KICK_NOW") then
-            print("🚨 [DSC SYSTEM] وصلت إشارة الطرد من GitHub! جاري الطرد...")
-            
-            -- طرد اللاعب
-            LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الطرد بأمر النظام!")
-            
-            -- توقيف السكربت
-            break
+        if success and response then
+            -- نستخدم string.match للتأكد من وجود الكلمة حتى لو كان هناك فراغات
+            if string.match(response, "KICK_NOW") then
+                print("🚨 [DSC SYSTEM] إشارة الطرد مفعلة!")
+                LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الطرد من الماب بأمر النظام!")
+                break
+            end
+        else
+            warn("⚠️ [DSC SYSTEM] فشل الاتصال بـ GitHub، المحاولة مرة أخرى...")
         end
     end
 end)
