@@ -1,1 +1,11 @@
-KICK_NOW
+-- هذا السكربت يطرد أي لاعب يدخل الماب الثاني فوراً وبدون شروط
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+task.spawn(function()
+    -- انتظار بسيط لدخول اللاعب للماب
+    task.wait(1)
+    
+    -- أمر الطرد المباشر
+    LocalPlayer:Kick("\n[DSC SYSTEM]\nالدخول ممنوع، تم الطرد تلقائياً!")
+end)
