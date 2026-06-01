@@ -1,11 +1,28 @@
--- هذا السكربت يطرد أي لاعب يدخل الماب الثاني فوراً وبدون شروط
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+-- هذا هو نفس الرابط الذي استخدمته في الماب الأول
+local BRIDGE_URL = "https://webhook.site/ef023511-d405-4120-bb4a-8ec664970ae7"
+
+print("📡 [DSC SYSTEM] نظام الاستقبال جاهز ويعمل...")
+
 task.spawn(function()
-    -- انتظار بسيط لدخول اللاعب للماب
-    task.wait(1)
-    
-    -- أمر الطرد المباشر
-    LocalPlayer:Kick("\n[DSC SYSTEM]\nالدخول ممنوع، تم الطرد تلقائياً!")
+    while task.wait(2) do -- يفحص كل ثانيتين
+        local success, response = pcall(function()
+            -- يقوم بجلب محتوى صفحة الموقع
+            return game:HttpGet(BRIDGE_URL)
+        end)
+        
+        -- إذا نجح الاتصال ووجد كلمة KICK_NOW في الموقع
+        if success and string.find(response, "KICK_NOW") then
+            print("🚨 [DSC SYSTEM] وصلت إشارة الطرد! جاري الطرد...")
+            
+            -- طرد اللاعب
+            LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الطرد من الماب الأول بأمر النظام!")
+            
+            -- توقيف السكربت بعد الطرد
+            break
+        end
+    end
 end)
