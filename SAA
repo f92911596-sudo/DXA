@@ -1,0 +1,31 @@
+-- سكربت Delta لاستقبال إشارة الطرد عبر ديسكورد
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- استبدل الرابط أدناه برابط الـ Webhook الخاص بك
+local DISCORD_WEBHOOK_URL = "ضع_رابط_الـ_Webhook_الجديد_هنا" 
+
+-- تحويل الرابط للعمل عبر Proxy
+local ProxyURL = DISCORD_WEBHOOK_URL:gsub("discord.com", "webhook.lewisakura.moe") 
+
+print("📡 Delta Discord Listener Active... Waiting for signal")
+
+task.spawn(function()
+    while task.wait(2) do -- جعلنا الفحص كل ثانيتين لتقليل الضغط
+        local success, response = pcall(function()
+            return game:HttpGet(ProxyURL)
+        end)
+        
+        -- التحقق: يجب أن تكون العملية ناجحة، والاستجابة لا تكون فارغة، وتحتوي على كلمة KICK_NOW
+        if success and response and response ~= "" then
+            if string.find(response, "KICK_NOW") then
+                print("🚨 تم استقبال إشارة الطرد! جاري الخروج...")
+                LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الخروج فوراً بناءً على إشارة ديسكورد!")
+                break
+            else
+                print("📡 في انتظار الإشارة... (الوضع الحالي: سليم)")
+            end
+        end
+    end
+end)
