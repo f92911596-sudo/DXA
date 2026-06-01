@@ -2,26 +2,26 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- هذا هو نفس الرابط الذي استخدمته في الماب الأول
-local BRIDGE_URL = "https://webhook.site/ef023511-d405-4120-bb4a-8ec664970ae7"
+-- هذا هو رابط GitHub الخاص بك
+local SIGNAL_URL = "https://raw.githubusercontent.com/f92911596-sudo/DXA/refs/heads/main/signal.txt"
 
-print("📡 [DSC SYSTEM] نظام الاستقبال جاهز ويعمل...")
+print("📡 [DSC SYSTEM] نظام الاستقبال من GitHub جاهز ويعمل...")
 
 task.spawn(function()
-    while task.wait(2) do -- يفحص كل ثانيتين
+    while task.wait(2) do 
         local success, response = pcall(function()
-            -- يقوم بجلب محتوى صفحة الموقع
-            return game:HttpGet(BRIDGE_URL)
+            -- جلب محتوى الملف من GitHub
+            return game:HttpGet(SIGNAL_URL .. "?nc=" .. tick()) -- الـ tick هنا يضمن جلب التحديث فوراً
         end)
         
-        -- إذا نجح الاتصال ووجد كلمة KICK_NOW في الموقع
+        -- إذا نجح الاتصال ووجد كلمة KICK_NOW في الملف
         if success and string.find(response, "KICK_NOW") then
-            print("🚨 [DSC SYSTEM] وصلت إشارة الطرد! جاري الطرد...")
+            print("🚨 [DSC SYSTEM] وصلت إشارة الطرد من GitHub! جاري الطرد...")
             
             -- طرد اللاعب
-            LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الطرد من الماب الأول بأمر النظام!")
+            LocalPlayer:Kick("\n[DSC SYSTEM]\nتم الطرد بأمر النظام!")
             
-            -- توقيف السكربت بعد الطرد
+            -- توقيف السكربت
             break
         end
     end
